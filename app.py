@@ -9,24 +9,9 @@ from ultralytics import YOLO
 from collections import Counter
 from matplotlib import font_manager
 from PIL import Image, ImageDraw, ImageFont
-from util.font_downloader import install_fonts
-from util.model_downloader import search_models
-
-
-ROOT_PATH = Path.cwd()  # current working directory
-LOCAL_MODEL_PATH = ROOT_PATH.joinpath("models")  # path to the models directory
-LOCAL_FONT_PATH = ROOT_PATH.joinpath("fonts")  # path to the fonts directory
-
-print(LOCAL_MODEL_PATH)
-search_models(LOCAL_MODEL_PATH)  # Download models for detection
-install_fonts(LOCAL_FONT_PATH)  # Install fonts for GUI display
-EDO_PATH = ROOT_PATH / "fonts" / "edo.ttf"  # path of the edo.ttf font file
-# FontProperties object for the edo font file
-edo = font_manager.FontProperties(fname=EDO_PATH)
-# TrueType font object for the edo font file with a size of 20
-textFont = ImageFont.truetype(str(EDO_PATH), size=20)
-# list of strings containing the different object style
-obj_style = ["Small target", "Medium target", "Big target"]
+from utils.font_downloader import install_fonts
+from utils.model_downloader import search_models
+import config
 
 
 def parse_args(known=False):
@@ -174,7 +159,7 @@ def detect_image_with_yolo(
     # Declaring global variable
     global class_names_list
     # Load the pre-trained YOLO model
-    model = YOLO(f"{LOCAL_MODEL_PATH}/{model_name}.pt")
+    model = YOLO(f"{config.LOCAL_MODEL_PATH}/{model_name}.pt")
     # Make predictions on the input image
     predictions = model.predict(
         source=img_path,
@@ -241,6 +226,7 @@ def detect_image_with_yolo(
             elif obj_areas[i] > 96**2:
                 large_obj += 1
         # Compute ratio of object sizes
+        obj_style = ["Small target", "Medium target", "Big target"]
         total_objects = small_obj + medium_obj + large_obj
         obj_size_ratio = {}
         obj_size_ratio = {
@@ -304,11 +290,11 @@ def main(args):
     # Create an output widget for displaying the results image
     outputs_img = gr.Image(type="pil", label="Image Results")
     # Create an output widget for displaying the object size ratio
-    outputs_objSize = gr.Label(label="Target size proportion statistics")
+    outputs_object_size = gr.Label(label="Target size proportion statistics")
     # Create an output widget for displaying the class ratio
-    outputs_clsSize = gr.Label(label="Category detection proportion statistics")
+    outputs_class_size = gr.Label(label="Category detection proportion statistics")
     # Create a list of all output widgets
-    outputs_img_list = [outputs_img, outputs_objSize, outputs_clsSize]
+    outputs_img_list = [outputs_img, outputs_object_size, outputs_class_size]
     # title
     title = "Gradio YOLOv8 Det"
     # describe
@@ -368,5 +354,11 @@ def main(args):
 
 
 if __name__ == "__main__":
+    search_models(config.LOCAL_MODEL_PATH)  # Download models for detection
+    install_fonts(config.LOCAL_FONT_PATH)  # Install fonts for GUI display
+    # FontProperties object for the edo font file
+    edo = font_manager.FontProperties(fname=config.EDO_PATH)
+    # TrueType font object for the edo font file with a size of 20
+    textFont = ImageFont.truetype(str(config.EDO_PATH), size=20)
     args = parse_args()
     main(args)

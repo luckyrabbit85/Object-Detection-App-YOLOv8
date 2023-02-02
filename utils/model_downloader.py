@@ -26,24 +26,23 @@ def search_models(models_directory):
     models_directory = Path(models_directory)
     if models_directory.is_dir():
         existing_models = [model.stem for model in models_directory.glob("*.pt")]
-        print(existing_models)
         # Get the list of models that need to be downloaded
         models_to_download = list(set(desired_models).difference(set(existing_models)))
-        print(models_to_download)
         # If there are models to download
         if models_to_download != []:
             console.print(
-                f"[bold red]{models_to_download} models does not exist, downloading...[/bold red]"
+                f"{models_to_download} models does not exist, downloading..",
+                style="bold red",
             )
             # Download and save the models
             download_and_save_models(models_to_download, models_directory)
         else:
             console.print(
-                f"{desired_models} [bold green] font already exists![/bold green]"
+                f"{desired_models} models already exists!", style="bold green"
             )
     else:
         console.print(
-            "[bold red]Model library does not exist and is being created...[/bold red]"
+            "Model library does not exist and is being created..", style="bold yellow"
         )
         models_directory.mkdir()
         download_and_save_models(desired_models, models_directory)
@@ -53,11 +52,11 @@ def search_models(models_directory):
 def download_and_save_models(models_to_download, models_directory):
     for model in models_to_download:
         url = urls_of_models_to_download[f"{model}"]
-        file = models_directory.joinpath(f"{model}.pt")
+        file_path = models_directory.joinpath(f"{model}.pt")
         try:
-            gdown.download(url, str(file))
+            gdown.download(url, str(file_path))
             console.print(
-                f"[bold green] {model} font file download is complete![/bold green] has been saved to: {file}"
+                f"[bold green] {model} font file download is complete![/bold green] has been saved to: {file_path}"
             )
         except Exception as e:
             print("Path error! End of program!")
