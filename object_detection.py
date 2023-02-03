@@ -8,7 +8,8 @@ from utils.model_downloader import search_models
 
 
 def parse_args(known=False):
-    parser = argparse.ArgumentParser(description="Gradio YOLOv8 Detection v1.1")
+    parser = argparse.ArgumentParser(
+        description="Gradio YOLOv8 Detection v1.1")
     parser.add_argument(
         "--source", "-src", default="upload", type=str, help="Image input source"
     )
@@ -79,7 +80,8 @@ def gradio_app(args):
             type="filepath",
             label="Original image",
         ),
-        gr.Dropdown(choices=model_names_list, value=args.model_name, label="Model"),
+        gr.Dropdown(choices=model_names_list,
+                    value=args.model_name, label="Model"),
         gr.Slider(
             384, 1536, step=128, value=args.inference_size, label="Inference size"
         ),

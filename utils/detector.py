@@ -2,51 +2,8 @@ import config
 from copy import deepcopy
 from ultralytics import YOLO
 from collections import Counter
-from matplotlib import font_manager
 from utils.components import random_light_color
 from PIL import Image, ImageDraw, ImageFont
-
-
-def draw_detections(
-    image_path, scores, bounding_boxes, labels, class_indices, class_colors
-):
-    image = Image.open(image_path)  # Open image file
-    draw = ImageDraw.Draw(image)  # Create an ImageDraw object
-    font_manager.FontProperties(fname=config.EDO_PATH)
-    text_font = ImageFont.truetype(str(config.EDO_PATH), size=20)
-    # Iterate through detections
-    for index, (score, bbox, label, class_index) in enumerate(
-        zip(scores, bounding_boxes, labels, class_indices)
-    ):
-        # Draw rectangle for the bounding box
-        draw.rectangle(bbox, fill=None, outline=class_colors[class_index], width=2)
-        # Create detection message
-        detection_message = f"{index+1}-{label} {round(score, 2)}"
-        # Get the bounding box for the detection message
-        text_box = text_font.getbbox(detection_message)
-        text_width, text_height = text_box[2] - text_box[0], text_box[3] - text_box[1]
-        label_background = (
-            bbox[0],
-            bbox[1],
-            bbox[0] + text_width,
-            bbox[1] + text_height,
-        )
-        # Draw rectangle for the background of the detection message
-        draw.rectangle(
-            label_background,
-            fill=class_colors[class_index],
-            outline=class_colors[class_index],
-        )
-        # Draw the detection message on the image
-        draw.multiline_text(
-            (bbox[0], bbox[1]),
-            detection_message,
-            fill=(0, 0, 0),
-            font=text_font,
-            align="center",
-        )
-    # Return the image with the detections drawn on it
-    return image
 
 
 def detect_objects(
@@ -59,18 +16,25 @@ def detect_objects(
 ):
     # Load the pre-trained YOLO model
     model = YOLO(f"{config.LOCAL_MODEL_PATH}/{model_name}.pt")
+
     # Make predictions on the input image
-    predictions = model.predict(
+    results = model.predict(
         source=img_path,
         imgsz=infer_size,
         conf=confidence_threshold,
         iou=iou_threshold,
-        return_outputs=True,
     )
-    detection_list = []
-    for i in predictions:
-        detection_list.append(deepcopy(i))
-    detections = detection_list[0]["det"].tolist()
+
+    detections = []
+    # Extracting list of detections
+    boxes = results[0].boxes
+    xyxy_list = boxes.xyxy.cpu().numpy().tolist()
+    conf_list = boxes.conf.cpu().numpy().tolist()
+    cls_list = boxes.cls.cpu().numpy().tolist()
+
+    for i in range(len(xyxy_list)):
+        detections.append(xyxy_list[i] + [conf_list[i]] + [cls_list[i]])
+
     return extract_info(img_path, detections, class_names_list)
 
 
@@ -79,7 +43,13 @@ def extract_info(img_path, detections, class_names_list):
         print("No objects detected in image!")
         return None, None, None
 
-    obj_areas, confidences, bounding_boxes, classes, class_indices = [], [], [], [], []
+    obj_areas, confidences, bounding_boxes, classes, class_indices = (
+        [],
+        [],
+        [],
+        [],
+        [],
+    )
     for detection in detections:
         class_index = int(detection[5])
         class_name = class_names_list[class_index]
@@ -129,3 +99,48 @@ def extract_info(img_path, detections, class_names_list):
         obj_size_ratio,
         class_ratio,
     )
+
+
+def draw_detections(
+    image_path, scores, bounding_boxes, labels, class_indices, class_colors
+):
+    image = Image.open(image_path)  # Open image file
+    draw = ImageDraw.Draw(image)  # Create an ImageDraw object
+    text_font = ImageFont.truetype(str(config.EDO_PATH), size=20)
+    # Iterate through detections
+    for index, (score, bbox, label, class_index) in enumerate(
+        zip(scores, bounding_boxes, labels, class_indices)
+    ):
+        # Draw rectangle for the bounding box
+        draw.rectangle(bbox, fill=None,
+                       outline=class_colors[class_index], width=2)
+        # Create detection message
+        detection_message = f"{index+1}-{label} {round(score, 2)}"
+        # Get the bounding box for the detection message
+        text_box = text_font.getbbox(detection_message)
+        text_width, text_height = (
+            text_box[2] - text_box[0],
+            text_box[3] - text_box[1],
+        )
+        label_background = (
+            bbox[0],
+            bbox[1],
+            bbox[0] + text_width,
+            bbox[1] + text_height,
+        )
+        # Draw rectangle for the background of the detection message
+        draw.rectangle(
+            label_background,
+            fill=class_colors[class_index],
+            outline=class_colors[class_index],
+        )
+        # Draw the detection message on the image
+        draw.multiline_text(
+            (bbox[0], bbox[1]),
+            detection_message,
+            fill=(0, 0, 0),
+            font=text_font,
+            align="center",
+        )
+    # Return the image with the detections drawn on it
+    return image
