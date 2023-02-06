@@ -5,8 +5,22 @@ import gdown
 import config
 from config import console
 
-# This function is used to download the models if not already present
+
 def search_models(models_directory):
+    """
+    Searches for the desired models in the specified models directory.
+
+    Parameters:
+    models_directory (str): The path to the directory where the models are located or should be saved.
+
+    Returns:
+    None
+
+    Output:
+    If the models directory does not exist, the function creates it and downloads the desired models to the directory.
+    If some of the desired models are not found in the directory, the function downloads and saves them to the directory.
+    If all the desired models already exist in the directory, the function outputs a message indicating that.
+    """
     # Check if the models directory exists
     models_directory = Path(models_directory)
     if models_directory.is_dir():
@@ -35,8 +49,20 @@ def search_models(models_directory):
         download_and_save_models(config.DESIRED_MODELS, models_directory)
 
 
-# This function is used to download and save the models
 def download_and_save_models(models_to_download, models_directory):
+    """
+    Download and save the desired models
+
+    This function downloads the models specified in models_to_download and saves them to the specified models_directory.
+
+    Arguments:
+    models_to_download (list): A list of model names to be downloaded.
+    models_directory (str): The path to the directory where the models will be saved.
+    Returns:
+    None
+    Raises:
+    Exception: If there is a problem with the file path, an error message is printed and the program is terminated.
+    """
     for model in models_to_download:
         url = config.MODEL_DOWNLOAD_URLS[f"{model}"]
         file_path = models_directory.joinpath(f"{model}.pt")

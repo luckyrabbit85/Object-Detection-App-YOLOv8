@@ -8,8 +8,32 @@ from utils.model_downloader import search_models
 
 
 def parse_args(known=False):
-    parser = argparse.ArgumentParser(
-        description="Gradio YOLOv8 Detection v1.1")
+    """
+    parse_args - parses the command line arguments for Gradio YOLOv8 Detection v1.1
+
+    This function creates an ArgumentParser object, adds arguments to it and then returns the parsed arguments.
+
+    Parameters:
+    known (bool, optional): If True, returns only known arguments, else returns all arguments. Default is False.
+
+    Returns:
+    Namespace: The Namespace object containing the parsed arguments.
+
+    Arguments:
+    --source, -src (str, default='upload'): Image input source.
+    --source_video, -src_v (str, default='upload'): Video input source.
+    --img_tool, -it (str, default='editor'): Input image tool.
+    --model_name, -mn (str, default='yolov8s'): Model name.
+    --model_cfg, -mc (str, default='model_names.yaml'): Model config file.
+    --class_names, -cls (str, default='class_names.yaml'): Class names file.
+    --nms_conf, -conf (float, default=0.5): NMS confidence threshold.
+    --nms_iou, -iou (float, default=0.45): NMS IoU threshold.
+    --device, -dev (str, default='cuda:0'): Device to use (cuda or cpu).
+    --inference_size, -isz (int, default=640): Inference size.
+    --max_detnum, -mdn (float, default=50): Maximum detection number.
+    --slider_step, -ss (float, default=0.05): Slider step.
+    """
+    parser = argparse.ArgumentParser(description="Gradio YOLOv8 Detection v1.1")
     parser.add_argument(
         "--source", "-src", default="upload", type=str, help="Image input source"
     )
@@ -67,6 +91,25 @@ def parse_args(known=False):
 
 
 def gradio_app(args):
+    """
+    A function to create and launch a Gradio object detection app using YOLOv8.
+
+    The function takes an object `args` as an input, which should contain the following attributes:
+        - `source` (str): A string specifying the source of the input image (e.g. 'filepath', 'url', etc.).
+        - `img_tool` (str): A string specifying the image tool (e.g. 'PIL', 'OpenCV', etc.).
+        - `model_cfg` (str): A string specifying the path to the model configuration file in YAML format.
+        - `class_names` (str): A string specifying the path to the class names file in YAML format.
+        - `model_name` (str): A string specifying the name of the YOLOv8 model to use for object detection.
+        - `inference_size` (int): An integer specifying the size of the input image for inference.
+        - `nms_conf` (float): A float specifying the confidence threshold for non-maximum suppression.
+        - `nms_iou` (float): A float specifying the IoU threshold for non-maximum suppression.
+        - `slider_step` (float): A float specifying the step size for the slider widgets.
+
+    The function creates an instance of the `Gradio` interface, sets the inputs and outputs, sets the title and description, and launches the app in the browser. The app allows the user to upload an image, select the YOLOv8 model, set the inference size, and adjust the confidence and IoU thresholds for non-maximum suppression. The app then displays the resulting object detections.
+
+    Returns:
+        None
+    """
     gr.close_all()
     model_names_list = read_yaml(args.model_cfg)["model_names"]
     class_names_list = read_yaml(args.class_names)["class_names"]
@@ -80,8 +123,7 @@ def gradio_app(args):
             type="filepath",
             label="Original image",
         ),
-        gr.Dropdown(choices=model_names_list,
-                    value=args.model_name, label="Model"),
+        gr.Dropdown(choices=model_names_list, value=args.model_name, label="Model"),
         gr.Slider(
             384, 1536, step=128, value=args.inference_size, label="Inference size"
         ),

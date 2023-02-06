@@ -8,6 +8,12 @@ def read_yaml(yaml_file):
 
 
 def random_light_color():
+    """
+    Generates a random light color as a tuple of RGB values.
+
+    Returns:
+    tuple: A tuple of RGB values representing a random light color.
+    """
     hue = random.random()
     saturation = 0.5 + random.random() / 2.0
     lightness = 0.4 + random.random() / 5.0
