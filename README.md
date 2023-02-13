@@ -2,12 +2,13 @@
 
 A real-time object detection app built using YOLOv8 and Gradio.
 
-## Usage
+## Installation and Usage
 
-To run the app, simply install the required dependencies and run the script:
+Create a a Virtual Environment with Python 3.10 and install the required dependencies, then run the script:
 
 ```
     pip install -r requirements.txt
+
     python object_detection.py
 ```
 

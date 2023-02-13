@@ -7,84 +7,95 @@ from utils.font_downloader import install_fonts
 from utils.model_downloader import search_models
 
 
+import argparse
+
+
 def parse_args(known=False):
     """
-    parse_args - parses the command line arguments for Gradio YOLOv8 Detection v1.1
-
-    This function creates an ArgumentParser object, adds arguments to it and then returns the parsed arguments.
+    Parses the command line arguments for Gradio YOLOv8 Detection v1.1
 
     Parameters:
     known (bool, optional): If True, returns only known arguments, else returns all arguments. Default is False.
 
     Returns:
     Namespace: The Namespace object containing the parsed arguments.
-
-    Arguments:
-    --source, -src (str, default='upload'): Image input source.
-    --source_video, -src_v (str, default='upload'): Video input source.
-    --img_tool, -it (str, default='editor'): Input image tool.
-    --model_name, -mn (str, default='yolov8s'): Model name.
-    --model_cfg, -mc (str, default='model_names.yaml'): Model config file.
-    --class_names, -cls (str, default='class_names.yaml'): Class names file.
-    --nms_conf, -conf (float, default=0.5): NMS confidence threshold.
-    --nms_iou, -iou (float, default=0.45): NMS IoU threshold.
-    --device, -dev (str, default='cuda:0'): Device to use (cuda or cpu).
-    --inference_size, -isz (int, default=640): Inference size.
-    --max_detnum, -mdn (float, default=50): Maximum detection number.
-    --slider_step, -ss (float, default=0.05): Slider step.
     """
     parser = argparse.ArgumentParser(description="Gradio YOLOv8 Detection v1.1")
+
+    # Image input source
     parser.add_argument(
-        "--source", "-src", default="upload", type=str, help="Image input source"
+        "--source", "-src", type=str, default="upload", help="Image input source"
     )
+
+    # Video input source
     parser.add_argument(
         "--source_video",
         "-src_v",
-        default="upload",
         type=str,
+        default="upload",
         help="Video input source",
     )
+
+    # Input image tool
     parser.add_argument(
-        "--img_tool", "-it", default="editor", type=str, help="Input image tool"
+        "--img_tool", "-it", type=str, default="editor", help="Input image tool"
     )
+
+    # Model name
     parser.add_argument(
-        "--model_name", "-mn", default="yolov8s", type=str, help="Model name"
+        "--model_name", "-mn", type=str, default="yolov8s", help="Model name"
     )
+
+    # Model config file
     parser.add_argument(
         "--model_cfg",
         "-mc",
-        default="model_names.yaml",
         type=str,
+        default="model_names.yaml",
         help="Model config file",
     )
+
+    # Class names file
     parser.add_argument(
         "--class_names",
         "-cls",
-        default="class_names.yaml",
         type=str,
+        default="class_names.yaml",
         help="Class names file",
     )
+
+    # NMS confidence threshold
     parser.add_argument(
-        "--nms_conf", "-conf", default=0.5, type=float, help="NMS confidence threshold"
+        "--nms_conf", "-conf", type=float, default=0.5, help="NMS confidence threshold"
     )
+
+    # NMS IoU threshold
     parser.add_argument(
-        "--nms_iou", "-iou", default=0.45, type=float, help="NMS IoU threshold"
+        "--nms_iou", "-iou", type=float, default=0.45, help="NMS IoU threshold"
     )
+
+    # Device to use (cuda or cpu)
     parser.add_argument(
         "--device",
         "-dev",
-        default="cuda:0",
         type=str,
+        default="cuda:0",
         help="Device to use (cuda or cpu)",
     )
+
+    # Inference size
     parser.add_argument(
-        "--inference_size", "-isz", default=640, type=int, help="Inference size"
+        "--inference_size", "-isz", type=int, default=640, help="Inference size"
     )
+
+    # Maximum detection number
     parser.add_argument(
-        "--max_detnum", "-mdn", default=50, type=float, help="Maximum detection number"
+        "--max_detnum", "-mdn", type=float, default=50, help="Maximum detection number"
     )
+
+    # Slider step
     parser.add_argument(
-        "--slider_step", "-ss", default=0.05, type=float, help="Slider step"
+        "--slider_step", "-ss", type=float, default=0.05, help="Slider step"
     )
 
     return parser.parse_known_args()[0] if known else parser.parse_args()
