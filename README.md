@@ -8,8 +8,7 @@ Create a a Virtual Environment with Python 3.10 and install the required depende
 
 ```
     pip install -r requirements.txt
-
-    python object_detection.py
+    python app.py
 ```
 
 ## Description
