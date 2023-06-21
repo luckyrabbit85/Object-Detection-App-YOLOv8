@@ -152,7 +152,7 @@ def gradio_app(args):
     ]
 
     # Create a list of all output widgets
-    oytput_widgets_list = [
+    output_widgets_list = [
         gr.Image(type="pil", label="Image Results"),
         gr.Label(label="Target size proportion statistics"),
         gr.Label(label="Category detection proportion statistics"),
@@ -195,7 +195,7 @@ def gradio_app(args):
     gr_app = gr.Interface(
         fn=detect_objects,
         inputs=input_widgets_list,
-        outputs=oytput_widgets_list,
+        outputs=output_widgets_list,
         title=title,
         description=description,
         examples=examples_imgs,
